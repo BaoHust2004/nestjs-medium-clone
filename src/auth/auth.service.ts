@@ -37,9 +37,23 @@ export class AuthService {
           username: dto.username,
           password: hash,
         },
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          bio: true,
+          image: true,
+        }
       });
 
-      return this.signToken(user.id, user.email);
+      const token = await this.signToken(user.id, user.email);
+
+      return {
+        user: {
+          ...user,
+          token: token.access_token
+        }
+      };
     } catch (error) {
       if (error.code === 'P2002') {
         throw new ConflictException('Credentials taken');
