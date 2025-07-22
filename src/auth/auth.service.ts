@@ -13,7 +13,6 @@ export class AuthService {
   ) {}
 
   async signup(dto: SignupDto) {
-
     const existingEmail = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
@@ -98,5 +97,29 @@ export class AuthService {
     });
 
     return { access_token: token };
+  }
+
+  async getCurrentUser(userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        bio: true,
+        image: true,
+      },
+    });
+
+    if (!user) {
+      throw new ForbiddenException('User not found');
+    }
+
+    const token = await this.signToken(user.id, user.email);
+
+    return {
+      ...user,
+      token: token.access_token
+    };
   }
 }
