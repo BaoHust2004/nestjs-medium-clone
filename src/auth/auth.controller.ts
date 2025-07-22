@@ -28,13 +28,4 @@ export class AuthController {
     return this.authService.login(dto);
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Get('user')
-  async getCurrentUser(@Req() req: RequestWithUser) {
-    if (!req.user) {
-      throw new Error('No user from auth guard');
-    }
-    const user = await this.authService.getCurrentUser(req.user.sub);
-    return { user };
-  }
 }
