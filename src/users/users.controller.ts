@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Put, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, Req, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateUserDto } from './dto/user.dto';
@@ -21,7 +21,7 @@ export class UsersController {
   @Get('user')
   async getCurrentUser(@Req() req: RequestWithUser) {
     if (!req.user) {
-      throw new Error('No user from auth guard');
+      throw new UnauthorizedException('User not authenticated');
     }
     return this.usersService.getCurrentUser(req.user.sub);
   }
@@ -29,13 +29,13 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   @Put('user')
   async updateUser(
-    @Body('user') dto: UpdateUserDto,
+    @Body('user') updateUserDto: UpdateUserDto,
     @Req() req: RequestWithUser
   ) {
     if (!req.user) {
-      throw new Error('No user from auth guard');
+      throw new UnauthorizedException('User not authenticated');
     }
-    return this.usersService.updateUser(req.user.sub, dto);
+    return this.usersService.updateUser(req.user.sub, updateUserDto);
   }
 
   @Get('profiles/:username')

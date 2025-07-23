@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateUserDto } from './dto/user.dto';
 import * as bcrypt from 'bcrypt';
@@ -20,7 +20,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new ForbiddenException('User not found');
+      throw new NotFoundException('User not found');
     }
 
     return { user };
@@ -85,13 +85,13 @@ export class UsersService {
     });
 
     if (!profile) {
-      throw new ForbiddenException('Profile not found');
+      throw new NotFoundException('Profile not found');
     }
 
     return {
       profile: {
         ...profile,
-        following: false // TODO: Implement following functionality
+        following: false 
       }
     };
   }
