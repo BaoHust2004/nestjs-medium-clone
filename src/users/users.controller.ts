@@ -13,12 +13,12 @@ interface RequestWithUser extends Request {
   user?: JwtPayload;
 }
 
-@Controller('api')
+@Controller('api/users')  
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @UseGuards(AuthGuard('jwt'))
-  @Get('user')
+  @Get('me')  
   async getCurrentUser(@Req() req: RequestWithUser) {
     if (!req.user) {
       throw new UnauthorizedException('User not authenticated');
@@ -27,7 +27,7 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Put('user')
+  @Put('me') 
   async updateUser(
     @Body('user') updateUserDto: UpdateUserDto,
     @Req() req: RequestWithUser
@@ -38,7 +38,7 @@ export class UsersController {
     return this.usersService.updateUser(req.user.sub, updateUserDto);
   }
 
-  @Get('profiles/:username')
+  @Get('profiles/:username')  
   async getProfile(@Param('username') username: string) {
     return this.usersService.getProfile(username);
   }
