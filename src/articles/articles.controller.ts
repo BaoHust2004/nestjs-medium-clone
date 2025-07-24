@@ -20,7 +20,7 @@ export class ArticlesController {
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
-  async createArticle(
+  async create(
     @Body('article') createArticleDto: CreateArticleDto,
     @Req() req: RequestWithUser,
   ): Promise<ArticleResponse> {
@@ -31,13 +31,13 @@ export class ArticlesController {
   }
 
   @Get(':slug')
-  async getArticle(@Param('slug') slug: string): Promise<ArticleResponse> {
+  async get(@Param('slug') slug: string): Promise<ArticleResponse> {
     return this.articlesService.getArticle(slug);
   }
 
   @Put(':slug')
   @UseGuards(AuthGuard('jwt'))
-  async updateArticle(
+  async update(
     @Param('slug') slug: string,
     @Body('article') updateArticleDto: UpdateArticleDto,
     @Req() req: RequestWithUser,
@@ -50,7 +50,7 @@ export class ArticlesController {
 
   @Delete(':slug')
   @UseGuards(AuthGuard('jwt'))
-  async deleteArticle(
+  async delete(
     @Param('slug') slug: string,
     @Req() req: RequestWithUser,
   ): Promise<DeleteArticleResponse> {
