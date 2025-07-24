@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards, Unauth
 import { ArticlesService } from './articles.service';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateArticleDto, UpdateArticleDto } from './dto/article.dto';
+import { ArticleResponse, DeleteArticleResponse } from './interfaces/article.interface';
 import { Request } from 'express';
 
 interface JwtPayload {
@@ -22,7 +23,7 @@ export class ArticlesController {
   async createArticle(
     @Body('article') createArticleDto: CreateArticleDto,
     @Req() req: RequestWithUser,
-  ) {
+  ): Promise<ArticleResponse> {
     if (!req.user) {
       throw new UnauthorizedException('User not authenticated');
     }
@@ -30,7 +31,7 @@ export class ArticlesController {
   }
 
   @Get(':slug')
-  async getArticle(@Param('slug') slug: string) {
+  async getArticle(@Param('slug') slug: string): Promise<ArticleResponse> {
     return this.articlesService.getArticle(slug);
   }
 
@@ -40,7 +41,7 @@ export class ArticlesController {
     @Param('slug') slug: string,
     @Body('article') updateArticleDto: UpdateArticleDto,
     @Req() req: RequestWithUser,
-  ) {
+  ): Promise<ArticleResponse> {
     if (!req.user) {
       throw new UnauthorizedException('User not authenticated');
     }
@@ -52,7 +53,7 @@ export class ArticlesController {
   async deleteArticle(
     @Param('slug') slug: string,
     @Req() req: RequestWithUser,
-  ) {
+  ): Promise<DeleteArticleResponse> {
     if (!req.user) {
       throw new UnauthorizedException('User not authenticated');
     }

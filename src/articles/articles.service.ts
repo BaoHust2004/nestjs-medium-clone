@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateArticleDto, UpdateArticleDto } from './dto/article.dto';
+import { ArticleResponse, DeleteArticleResponse } from './interfaces/article.interface';
 
 @Injectable()
 export class ArticlesService {
@@ -13,7 +14,7 @@ export class ArticlesService {
       .replace(/\s+/g, '-');
   }
 
-  async createArticle(userId: number, dto: CreateArticleDto) {
+  async createArticle(userId: number, dto: CreateArticleDto): Promise<ArticleResponse> {
     const slug = this.generateSlug(dto.title);
 
     const article = await this.prisma.article.create({
@@ -36,7 +37,7 @@ export class ArticlesService {
     return { article };
   }
 
-  async getArticle(slug: string) {
+  async getArticle(slug: string): Promise<ArticleResponse> {
     const article = await this.prisma.article.findUnique({
       where: { slug },
       include: {
@@ -57,7 +58,7 @@ export class ArticlesService {
     return { article };
   }
 
-  async updateArticle(slug: string, userId: number, dto: UpdateArticleDto) {
+  async updateArticle(slug: string, userId: number, dto: UpdateArticleDto): Promise<ArticleResponse> {
     const article = await this.prisma.article.findUnique({
       where: { slug },
     });
@@ -90,7 +91,7 @@ export class ArticlesService {
     return { article: updatedArticle };
   }
 
-  async deleteArticle(slug: string, userId: number) {
+  async deleteArticle(slug: string, userId: number): Promise<DeleteArticleResponse> {
     const article = await this.prisma.article.findUnique({
       where: { slug },
     });
@@ -106,5 +107,7 @@ export class ArticlesService {
     await this.prisma.article.delete({
       where: { slug },
     });
+
+    return { message: 'Article deleted successfully' };
   }
 }
