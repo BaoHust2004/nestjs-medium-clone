@@ -4,6 +4,9 @@ import { AuthGuard } from '@nestjs/passport';
 import { CreateArticleDto, UpdateArticleDto } from './dto/article.dto';
 import { ArticleResponse, DeleteArticleResponse } from './interfaces/article.interface';
 import { Request } from 'express';
+import { CreateCommentDto } from './dto/comment.dto';
+import { CommentResponse, CommentsResponse } from './interfaces/comment.interface';
+import { GetUser } from './common/decorators/get-user.decorator';
 
 interface JwtPayload {
   sub: number;
@@ -58,5 +61,32 @@ export class ArticlesController {
       throw new UnauthorizedException('User not authenticated');
     }
     return this.articlesService.deleteArticle(slug, req.user.sub);
+  }
+
+  @Post(':slug/comments')
+  @UseGuards(AuthGuard('jwt'))
+  async createComment(
+    @Param('slug') slug: string,
+    @Body('comment') createCommentDto: CreateCommentDto,
+    @GetUser() user: JwtPayload,
+  ): Promise<CommentResponse> {
+    return this.articlesService.createComment(slug, user.sub, createCommentDto);
+  }
+
+  @Get(':slug/comments')
+  async getComments(
+    @Param('slug') slug: string,
+  ): Promise<CommentsResponse> {
+    return this.articlesService.getComments(slug);
+  }
+
+  @Delete(':slug/comments/:id')
+  @UseGuards(AuthGuard('jwt'))
+  async deleteComment(
+    @Param('slug') slug: string,
+    @Param('id') id: string,
+    @GetUser() user: JwtPayload,
+  ): Promise<void> {
+    return this.articlesService.deleteComment(slug, +id, user.sub);
   }
 }
